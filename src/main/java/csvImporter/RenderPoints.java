@@ -18,43 +18,53 @@ public class RenderPoints {
 		
 		double accuracy = 0;
 		
-		double size = Math.min(TrueDots.size(), QuestionDots.size());
+		double size = Math.max(TrueDots.size(), QuestionDots.size());
 		
 		for (RealPoint targetpoint: QuestionDots) {
 		
-		RealPoint Nearest = getNearestPoint(TrueDots, targetpoint);
+			int Querytime = (int)targetpoint.getDoublePosition(2);
+			RealPoint Queryspace = new RealPoint(targetpoint.getDoublePosition(0), targetpoint.getDoublePosition(1));
+			
+			
+			List<RealPoint> TimeList = new ArrayList<RealPoint>();
+			
+			for(RealPoint sourcepoint: TrueDots) {
+				
+				int GTtime = (int) sourcepoint.getDoublePosition(2);
+				if (Math.abs(Querytime - GTtime) <= timeThreshold) {
+					
+					RealPoint GT = new RealPoint(sourcepoint.getDoublePosition(0), sourcepoint.getDoublePosition(1));
+					TimeList.add(GT);
+					
+				}
+			}
+			
+			
+		RealPoint Nearest = getNearestPoint(TimeList, Queryspace);
 		
-		double GTX = Nearest.getDoublePosition(0);
-		double GTY = Nearest.getDoublePosition(1);
-		int GTtime = (int) Nearest.getDoublePosition(2); 
 		
-		double [] Truespace = new double[] {GTX, GTY};
+	
 		
-		double [] Queryspace = new double[] {targetpoint.getDoublePosition(0), targetpoint.getDoublePosition(1)};
-		
-		int Querytime = (int)targetpoint.getDoublePosition(2);
-		
-		if (Math.abs(Querytime - GTtime) <= timeThreshold) {
-		
-			double distance = GetSpaceDistance(Truespace, Queryspace);
+		  if(Nearest!=null) {
+			double distance = GetSpaceDistance(Nearest, Queryspace);
 				if (distance < distanceThreshold ) {
 					
-					accuracy+= 1;
-				}
+					accuracy++;
 		}
 		
+		}
 		}
 		return accuracy/size;
 		
 	}
 	
-	public static double GetSpaceDistance(double[] source, double[] target) {
+	public static double GetSpaceDistance(RealPoint source, RealPoint target) {
 		
 		double distance = 0;
 		
-		for (int dim = 0; dim < source.length; dim++) {
+		for (int dim = 0; dim < source.numDimensions(); dim++) {
 			
-			distance += (source[dim] - target[dim]) * (source[dim] - target[dim]);
+			distance += (source.getDoublePosition(dim) - target.getDoublePosition(dim)) * (source.getDoublePosition(dim) - target.getDoublePosition(dim));
 			
 		}
 		
@@ -113,7 +123,6 @@ public class RenderPoints {
 	
 	public static void main(String[] args) throws IOException {
 		
-		new ImageJ();
 		
 		String HumanCSVFile = new String ("/Users/aimachine/Documents/VicData/HumanApoptosisMovie2.csv");
 		String AICSVFile = new String ("/Users/aimachine/Documents/VicData/ONETApoptosisMovie2.csv");
@@ -125,19 +134,19 @@ public class RenderPoints {
 		
 		double distanceThreshold = 40;
 		
-		int timeThreshold = 3;
+		int timeThreshold = 7;
 				
 		// Assume Human did a better job, check for AI accuracy:
 		
-		double AIaccuracy = CheckMaster(HumanDots, AIDots, distanceThreshold, timeThreshold);
+		double TruePositive = CheckMaster(HumanDots, AIDots, distanceThreshold, timeThreshold);
 		
-		System.out.println("If Human was right AI accuracy is: " + AIaccuracy);
+		System.out.println("True Positive: " + TruePositive);
 		
 		// Assume Human did a better job, check for AI accuracy:
 		
-		double Humanaccuracy = CheckMaster(AIDots, HumanDots, distanceThreshold, timeThreshold);
+		double FalseNegative = 1.0 - CheckMaster(AIDots, HumanDots, distanceThreshold, timeThreshold);
 				
-		System.out.println("If AI was right Human accuracy is: " + Humanaccuracy);
+		System.out.println("False Negative: " + FalseNegative);
 		
 	}
 	
