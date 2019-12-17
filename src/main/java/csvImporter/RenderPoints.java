@@ -18,7 +18,7 @@ public class RenderPoints {
 		
 		double accuracy = 0;
 		
-		double size = Math.max(TrueDots.size(), QuestionDots.size());
+		double size = QuestionDots.size();
 		
 		for (RealPoint targetpoint: QuestionDots) {
 		
@@ -39,13 +39,12 @@ public class RenderPoints {
 				}
 			}
 			
-			
+		if (TimeList.size() > 0) {	
 		RealPoint Nearest = getNearestPoint(TimeList, Queryspace);
 		
 		
 	
 		
-		  if(Nearest!=null) {
 			double distance = GetSpaceDistance(Nearest, Queryspace);
 				if (distance < distanceThreshold ) {
 					
@@ -125,28 +124,25 @@ public class RenderPoints {
 		
 		
 		String HumanCSVFile = new String ("/Users/aimachine/Documents/VicData/HumanApoptosisMovie2.csv");
-		String AICSVFile = new String ("/Users/aimachine/Documents/VicData/ONETApoptosisMovie2.csv");
+		String AICSVFile = new String ("/Users/aimachine/Documents/VicData/ONETApoptosisLocationEventCountsMovie2.csv");
 		
 		// Read files
 		
 		List<RealPoint> HumanDots = loadPoints3dCsv(HumanCSVFile);
 		List<RealPoint> AIDots = loadPoints3dCsv(AICSVFile);
 		
-		double distanceThreshold = 40;
+		double distanceThreshold = 20;
 		
-		int timeThreshold = 7;
+		int timeThreshold = 6;
 				
-		// Assume Human did a better job, check for AI accuracy:
 		
-		double TruePositive = CheckMaster(HumanDots, AIDots, distanceThreshold, timeThreshold);
+		double FalseNegative = 1.0 - CheckMaster(HumanDots,AIDots, distanceThreshold, timeThreshold);
 		
-		System.out.println("True Positive: " + TruePositive);
-		
-		// Assume Human did a better job, check for AI accuracy:
-		
-		double FalseNegative = 1.0 - CheckMaster(AIDots, HumanDots, distanceThreshold, timeThreshold);
+		double TruePositive = CheckMaster(AIDots, HumanDots, distanceThreshold, timeThreshold);
 				
 		System.out.println("False Negative: " + FalseNegative);
+		
+		System.out.println("True Positive: " + TruePositive);
 		
 	}
 	
