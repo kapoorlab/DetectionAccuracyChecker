@@ -53,7 +53,8 @@ public class RenderPoints {
 		
 		}
 		}
-		return accuracy/size;
+		System.out.println(accuracy);
+		return accuracy/180;
 		
 	}
 	
@@ -136,13 +137,15 @@ public class RenderPoints {
 		int timeThreshold = 6;
 				
 		
-		double FalseNegative = 1.0 - CheckMaster(HumanDots,AIDots, distanceThreshold, timeThreshold);
+		
 		
 		double TruePositive = CheckMaster(AIDots, HumanDots, distanceThreshold, timeThreshold);
-				
-		System.out.println("False Negative: " + FalseNegative);
-		
+		double FalsePositive = 1.0 - CheckMaster(HumanDots,AIDots, distanceThreshold, timeThreshold);
+		System.out.println(HumanDots.size()+ " "+ AIDots.size());
 		System.out.println("True Positive: " + TruePositive);
+		System.out.println("False Positive: " + FalsePositive);
+		
+		
 		
 	}
 	
